@@ -1,30 +1,43 @@
-Build docker containers with Flask App
-======================================
+Simple Docker Flask APP
+=======================
 
-refs: http://containertutorials.com/docker-compose/flask-simple-app.html
-
-
-1. Build docker image
-------------------
+How to Run
+----------
 
 .. code-block:: bash
 
-  docker build -t flask-sample-one:latest .
+    # Buid image
+    docker build -t simple_docker_flask_app:latest .
+    # Run container as daemon with port 5000
+    docker run -d -p 5000:5000 simple_docker_flask_app
+
+    # open browser with 127.0.0.0:5000
 
 
-2. Run docker container
---------------------
+Flask APP code
+----------------
 
-.. code-block:: bash
+.. code-block:: python
 
-  docker run -d -p 5000:5000 flask-sample-one
+    from flask import Flask
+    app = Flask(__name__)
+
+    @app.route('/')
+    def hello_world():
+        return 'Flask Dockerized'
+
+    if __name__ == '__main__':
+        app.run(debug=True,host='0.0.0.0')
 
 
-3. Check running container
------------------------
+Dockerfile
+-----------
 
-.. code-block:: bash
+.. code-block:: cfg
 
-  $ docker ps 
-  CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
-  110e57379afb        flask-sample-one    "python app.py"          12 minutes ago      Up 12 minutes       0.0.0.0:5000->5000/tcp   angry_shannon
+    FROM python:3.6-alpine
+    COPY . /app
+    WORKDIR /app
+    RUN pip install -r requirements.txt
+    ENTRYPOINT ["python"]
+    CMD ["app.py"]
